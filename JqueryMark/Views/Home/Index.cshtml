@@ -1,0 +1,147 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>ASP.NET</h1>
+    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <label class="control-label">手機號碼</label>
+        <input type="text" class="form-control" data-mask="0000-000-000" />
+    </div>
+    <div class="col-md-4">
+        <label class="control-label">住家電話</label>
+        <input type="text" class="form-control" id="phone_number" />
+    </div>
+    <div class="col-md-4">
+        <label class="control-label">IP Address</label>
+        <input type="text" class="form-control" id="ip_address" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <label class="control-label">測試</label>
+        <input type="text" class="form-control fallback" />
+    </div>
+    <div class="col-md-4">
+        <label class="control-label">Reverse is true</label>
+        <input type="text" class="form-control" id="reverse-istrue" />
+    </div>
+    <div class="col-md-4">
+        <label class="control-label">Reverse is false</label>
+        <input type="text" class="form-control" id="reverse-isfalse" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <label class="control-label">Mix</label>
+        <input type="text" class="form-control" id="mix-text" />
+    </div>
+    <div class="col-md-4">
+        <label class="control-label">Mix Type</label>
+        <input type="text" class="form-control" id="mix-type" />
+    </div>
+    <div class="col-md-4">
+        <label class="control-label">Program give value</label>
+        <input type="text" class="form-control" id="setvalue" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <label class="control-label">電話</label>
+        <input type="text" class="form-control" id="phone" />
+    </div>
+    <div class="col-md-4">
+
+    </div>
+    <div class="col-md-4">
+
+    </div>
+</div>
+
+
+@section Scripts{
+    <script type="text/javascript" src="~/Scripts/jquery.mask.js"></script>
+    <script>
+        $(document).ready(function () {
+            var options = {
+                onComplete: function (cep) {
+                    alert("Complete");
+                },
+                onChange: function (cep) {
+                    console.log(cep);
+                }
+            };
+
+            $('#phone_number').mask("(00)0000-0000", options);
+
+            //等同於 $('#ip_address').mask('099.099.099.099')的效果
+            $('#ip_address').mask("0ZZ.0ZZ.0ZZ.0ZZ", {
+                //byPassKeys貌似也無效
+                byPassKeys: [8, 9, 37, 38, 39, 40],
+                translation: {
+                    'Z': {
+                        //optional設定為true，則可以允許為空 EX:111.111.111.111 vs 192.168.1.1 但Complete不會有反應
+                        pattern: /[0-9]/, optional: true
+                    }
+                },
+                onComplete: function (cep) {
+                    alert("Complete");
+                }
+            });
+
+            $('.fallback').mask("00r00r0000", {
+                translation: {
+                    r: {
+                        pattern: /[\/]/,
+                        fallback: '&'
+                    }
+                }
+            });
+
+            $('#reverse-istrue').mask("00-000*0000", { reverse: true })
+            $('#reverse-isfalse').mask("00-000*0000")
+
+            $('#mix-text').mask("AAA 000-S0S");
+
+            var optionsType = {
+                
+                onKeyPress: function (cep, e, field, options) {
+                    var marks = ["000*0000", "000-0-000"];
+                    var mark = cep.length > 7 ? marks[1] : marks[0];
+                    $('#mix-type').mask(mark, optionsType);
+                }
+            }
+            $('#mix-type').mask("000*0000", optionsType);
+
+            //參數會帶不進去
+            //$('#setvalue').masked('11223');
+
+            var phoneOption = {
+                onKeyPress: function (cep, e, field, options) {
+                    var marks = ["0000-0000", "000-0000000", "0000-000-000"];
+                    var mark;
+                    var stringLength = cep.length;
+                    if (stringLength>=2 && cep.substring(0, 2) == '09') {
+                        mark = marks[2];
+                    }
+                    else if (stringLength >= 9) {
+                        mark = marks[0];
+                    }
+                    else {
+                        mark = marks[1];
+                    };
+                    $('#phone').mask(mark, phoneOption);
+                }
+            }
+            $('#phone').mask("000-0000-000", phoneOption);
+
+
+
+        })
+    </script>
+}
