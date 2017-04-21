@@ -1,17 +1,38 @@
-﻿@{
-    ViewBag.Title = "Contact";
+﻿<form class="form-group" id="loginpanel" role="form" >
+    <div class="form-group has-feedback">
+        <label for="inputName" class="control-label">姓名</label>
+        <input type="text" class="form-control" id="UserName" name="UserName" placeholder="請填您的大名" data-required-error="快填!" data-minlength-error="at least 3 words" data-minlength="3" required>
+        <div class="help-block with-errors"></div>
+    </div>
+    <div class="form-group has-feedback">
+        <label for="inputName" class="control-label">電話</label>
+        <input type="password" class="form-control" id="UserPassword" name="UserPassword" data-required-error="必須填!" required>
+        <div class="help-block with-errors"></div>
+    </div>
+    <div>
+        <button type="button" onclick="Login()">登入</button>
+    </div>
+</form>
+
+@section Scripts{
+    <script type="text/javascript" src="~/Scripts/validator.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#loginpanel').validator();
+        });
+
+        function Login() {
+            $.ajax({
+                type: 'post',
+                data: $('#loginpanel').serialize(),
+                url: '@Url.Action("Login","Home")',
+                success: function (result) {
+                    alert(result);
+                },
+                error: function () {
+                    alert("system error!");
+                }
+            })
+        }
+    </script>
 }
-<h2>@ViewBag.Title.</h2>
-<h3>@ViewBag.Message</h3>
-
-<address>
-    One Microsoft Way<br />
-    Redmond, WA 98052-6399<br />
-    <abbr title="Phone">P:</abbr>
-    425.555.0100
-</address>
-
-<address>
-    <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-</address>

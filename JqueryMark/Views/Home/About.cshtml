@@ -1,7 +1,63 @@
-﻿@{
-    ViewBag.Title = "About";
-}
-<h2>@ViewBag.Title.</h2>
-<h3>@ViewBag.Message</h3>
+﻿<div id="registerpanel">
+    <div class="form-group has-feedback">
+        <label for="inputName" class="control-label">姓名</label>
+        <input type="text" class="form-control" id="inputName" placeholder="請填您的大名" data-required-error="快填!" data-minlength-error="at least 3 words" data-minlength="3" required>
+        <div class="help-block with-errors"></div>
+    </div>
+    <div class="form-group has-feedback">
+        <label for="inputName" class="control-label">電話</label>
+        <input type="text" class="form-control" id="phonenumber" data-required-error="必須填!" data-equals data-cusmin="7" data-cusmax="10" required>
+        <div class="help-block with-errors"></div>
+    </div>
 
-<p>Use this area to provide additional information.</p>
+</div>
+
+
+@section Scripts{
+    <script type="text/javascript" src="~/Scripts/jquery.mask.js"></script>
+    <script type="text/javascript" src="~/Scripts/validator.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#registerpanel').validator({
+                custom: {
+                    equals: function ($el) {
+                        var ispass;
+
+                        var min = $el.data('cusmin');
+                        var max = $el.data('cusmax');
+
+                        if ($el.val().length < min+1 || $el.val().length > max+2) {
+                            ispass = false;
+                        }
+
+                        if (ispass == false) {
+
+                            return '字串長度需大於' + min + '，小於' + max;
+                        }
+                    }
+                }
+            })
+
+
+            var phoneOption = {
+                onKeyPress: function (cep, e, field, options) {
+                    var marks = ["0000-0000", "000-0000000", "0000-000-000"];
+                    var mark;
+                    var stringLength = cep.length;
+                    if (stringLength >= 2 && cep.substring(0, 2) == '09') {
+                        mark = marks[2];
+                    }
+                    else if (stringLength >= 9) {
+                        mark = marks[0];
+                    }
+                    else {
+                        mark = marks[1];
+                    };
+                    $('#phonenumber').mask(mark, phoneOption);
+                }
+            }
+            $('#phonenumber').mask("000-0000-000", phoneOption);
+        })
+    </script>
+}
