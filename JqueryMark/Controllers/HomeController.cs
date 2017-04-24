@@ -33,20 +33,38 @@ namespace JqueryMark.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("Contact", actionModel);
+                return Content("Model is invalid!");
             }
 
-            using (var context = new PrincipalContext(ContextType.Machine))
+            try
             {
-                bool exist = context.ValidateCredentials(actionModel.UserName, actionModel.UserPassword);
-                if (exist)
+                //ContextType.Domain, "Domain Name", "Container", 加密方式, 伺服器帳號, 伺服器密碼
+                using (var context = new PrincipalContext(ContextType.Machine, null, null, ContextOptions.Negotiate, "", ""))
                 {
-                    return Content("Login success!");
+                    bool exist = context.ValidateCredentials(actionModel.UserName, actionModel.UserPassword);
+
+                    if (exist)
+                    {
+                        var identity = UserPrincipal.FindByIdentity(context, IdentityType.Name, actionModel.UserName);
+
+                        if (identity != null && !identity.IsAccountLockedOut())
+                        {
+                            return Content("登入成功！");
+                        }
+                        else
+                        {
+                            return Content("讀取登入者資料失敗，或者此帳號目前被鎖定。");
+                        }
+                    }
+                    else
+                    {
+                        return Content("指定的使用者帳號及密碼並無有效的內容。");
+                    }
                 }
-                else
-                {
-                    return Content("Login failed!");
-                }
+            }
+            catch
+            {
+                return Content("與Active Directory連線失敗，或其他系統錯誤。");
             }
         }
     }
