@@ -11,8 +11,12 @@
     </div>
     <div>
         <button type="button" onclick="Login()">登入</button>
+        <button type="button" onclick="GetAll()">取得</button>
     </div>
 </form>
+<div id="resultpanel">
+
+</div>
 
 @section Scripts{
     <script type="text/javascript" src="~/Scripts/validator.js"></script>
@@ -28,6 +32,19 @@
                 url: '@Url.Action("Login","Home")',
                 success: function (result) {
                     alert(result);
+                },
+                error: function () {
+                    alert("system error!");
+                }
+            })
+        };
+
+        function GetAll() {
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("GetAll","Home")',
+                success: function (result) {
+                    $('#resultpanel').html(result);
                 },
                 error: function () {
                     alert("system error!");

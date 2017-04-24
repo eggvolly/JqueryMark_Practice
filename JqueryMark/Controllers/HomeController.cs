@@ -1,4 +1,5 @@
 ﻿using JqueryMark.ActionModel;
+using JqueryMark.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.DirectoryServices.AccountManagement;
@@ -65,6 +66,39 @@ namespace JqueryMark.Controllers
             catch
             {
                 return Content("與Active Directory連線失敗，或其他系統錯誤。");
+            }
+        }
+
+        public ActionResult GetAll()
+        {
+            try
+            {
+                using (var context = new PrincipalContext(ContextType.Machine))
+                {
+                    using(var user = new UserPrincipal(context))
+                    {
+                        using (var searcher = new PrincipalSearcher(user))
+                        {
+                            var resultList = searcher.FindAll().ToList();
+                            List<UserIdentityViewModel> viewModel = new List<UserIdentityViewModel>();
+                            foreach (var item in resultList)
+                            {
+                                var tmp = new UserIdentityViewModel()
+                                {
+                                    Name = item.Name,
+                                    DisplayName = item.DisplayName,
+                                    Description = item.Description
+                                };
+                                viewModel.Add(tmp);
+                            }
+                            return PartialView("_GetAll", viewModel);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw;
             }
         }
     }
